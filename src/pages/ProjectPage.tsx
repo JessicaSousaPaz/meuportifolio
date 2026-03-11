@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Tag, MapPin, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, MapPin, ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ProjectData {
@@ -38,6 +38,8 @@ Foram projetadas áreas de convivência, espaços culturais, áreas esportivas, 
       './images/sesc/Enscape_2025-08-15-01-39-32.png',
       './images/sesc/Corte transversal perspectivado.png',
       './images/sesc/corte AA.png',
+      './images/sesc/PRANCHA 1 - A1 COLORIDO.jpg',
+      './images/sesc/PRANCHA 2 - A1 COLORIDO.jpg',
     ],
     details: [
       { label: 'Área do Terreno', value: '12.500 m²' },
@@ -145,18 +147,71 @@ function GallerySection({
 }) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 5;
+  const ZOOM_STEP = 0.5;
+
+  const resetZoom = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const changeImage = (newIndex: number) => {
+    setSelectedIndex(newIndex);
+    resetZoom();
+  };
 
   const handlePrevious = () => {
     if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex - 1 + project.images.length) % project.images.length);
+      changeImage((selectedIndex - 1 + project.images.length) % project.images.length);
     }
   };
 
   const handleNext = () => {
     if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex + 1) % project.images.length);
+      changeImage((selectedIndex + 1) % project.images.length);
     }
   };
+
+  const handleZoomIn = () => setZoom(z => Math.min(z + ZOOM_STEP, MAX_ZOOM));
+  const handleZoomOut = () => {
+    setZoom(z => {
+      const next = Math.max(z - ZOOM_STEP, MIN_ZOOM);
+      if (next === MIN_ZOOM) setPan({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      setZoom(z => Math.min(z + ZOOM_STEP, MAX_ZOOM));
+    } else {
+      setZoom(z => {
+        const next = Math.max(z - ZOOM_STEP, MIN_ZOOM);
+        if (next === MIN_ZOOM) setPan({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoom <= 1) return;
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !dragStartRef.current) return;
+    setPan({ x: e.clientX - dragStartRef.current.x, y: e.clientY - dragStartRef.current.y });
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -164,15 +219,18 @@ function GallerySection({
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') handlePrevious();
       if (e.key === 'ArrowRight') handleNext();
+      if (e.key === '+' || e.key === '=') handleZoomIn();
+      if (e.key === '-') handleZoomOut();
       if (e.key === 'Escape') {
         setIsOpen(false);
         setSelectedIndex(null);
+        resetZoom();
       }
     };
     
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isOpen, selectedIndex, project.images.length]);
+  }, [isOpen, selectedIndex, project.images.length, zoom]);
 
   return (
     <>
@@ -195,7 +253,12 @@ function GallerySection({
                 alt={`${project.title} - Imagem ${index + 1}`}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+                  <ZoomIn size={28} className="text-white" strokeWidth={1.5} />
+                </div>
+              </div>
             </div>
           );
         })}
@@ -203,31 +266,80 @@ function GallerySection({
 
       {/* Fullscreen Image Viewer */}
       {isOpen && selectedIndex !== null && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden"
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+        >
           {/* Close Button */}
           <button
             onClick={() => {
               setIsOpen(false);
               setSelectedIndex(null);
+              resetZoom();
             }}
             className="absolute top-6 right-6 z-20 text-white hover:text-gray-300 transition-colors p-2"
             aria-label="Fechar"
+            onMouseDown={e => e.stopPropagation()}
           >
             <X size={32} strokeWidth={1.5} />
           </button>
+
+          {/* Zoom Controls */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+            <button
+              onClick={handleZoomOut}
+              disabled={zoom <= MIN_ZOOM}
+              className="text-white hover:text-gray-300 transition-colors disabled:opacity-30 p-1"
+              aria-label="Diminuir zoom"
+              onMouseDown={e => e.stopPropagation()}
+            >
+              <ZoomOut size={20} strokeWidth={1.5} />
+            </button>
+            <span className="text-white text-sm font-light w-12 text-center">{Math.round(zoom * 100)}%</span>
+            <button
+              onClick={handleZoomIn}
+              disabled={zoom >= MAX_ZOOM}
+              className="text-white hover:text-gray-300 transition-colors disabled:opacity-30 p-1"
+              aria-label="Aumentar zoom"
+              onMouseDown={e => e.stopPropagation()}
+            >
+              <ZoomIn size={20} strokeWidth={1.5} />
+            </button>
+            {zoom > 1 && (
+              <button
+                onClick={resetZoom}
+                className="text-white hover:text-gray-300 transition-colors p-1 ml-1 border-l border-white/30 pl-3"
+                aria-label="Resetar zoom"
+                onMouseDown={e => e.stopPropagation()}
+              >
+                <Maximize2 size={18} strokeWidth={1.5} />
+              </button>
+            )}
+          </div>
 
           {/* Image */}
           <img
             src={getImageUrl(project.images[selectedIndex])}
             alt={`${project.title} - Imagem ${selectedIndex + 1}`}
-            className="max-h-screen max-w-screen w-auto h-auto object-contain"
+            className="max-h-screen max-w-screen w-auto h-auto object-contain select-none transition-transform duration-150"
+            style={{
+              transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+              transformOrigin: 'center center',
+            }}
+            draggable={false}
           />
 
           {/* Previous Button */}
           <button
             onClick={handlePrevious}
-            className="absolute left-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2 disabled:opacity-50"
+            className="absolute left-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2"
             aria-label="Imagem anterior"
+            onMouseDown={e => e.stopPropagation()}
           >
             <ChevronLeft size={40} strokeWidth={1.5} />
           </button>
@@ -235,8 +347,9 @@ function GallerySection({
           {/* Next Button */}
           <button
             onClick={handleNext}
-            className="absolute right-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2 disabled:opacity-50"
+            className="absolute right-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2"
             aria-label="Próxima imagem"
+            onMouseDown={e => e.stopPropagation()}
           >
             <ChevronRight size={40} strokeWidth={1.5} />
           </button>

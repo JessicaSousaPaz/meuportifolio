@@ -442,7 +442,7 @@ function ProjectsSection() {
     {
       id: 'favela-do-moinho',
       number: '03',
-      title: 'Requalificação Urbana - Favela do Moinho',
+      title: 'Transposição e Requalificação Urbana - Favela do Moinho',
       semester: '7º Semestre',
       description: 'Projeto de requalificação urbana e transposição na Favela do Moinho, incluindo análise de insolação, fluxos e áreas verdes.',
       tags: ['Urbanismo', 'Requalificação', 'Social'],
