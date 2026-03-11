@@ -670,7 +670,7 @@ function HomePage() {
 // Main App Component
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/meuportifolio/">
       <div className="min-h-screen bg-background text-foreground">
         <Routes>
           <Route path="/" element={<HomePage />} />
