@@ -163,22 +163,21 @@ function GallerySection({
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isOpen) return;
-    if (e.key === 'ArrowLeft') handlePrevious();
-    if (e.key === 'ArrowRight') handleNext();
-    if (e.key === 'Escape') {
-      setIsOpen(false);
-      setSelectedIndex(null);
-    }
-  };
-
   useEffect(() => {
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [isOpen, selectedIndex]);
+    if (!isOpen) return;
+    
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') handlePrevious();
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        setSelectedIndex(null);
+      }
+    };
+    
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen, selectedIndex, project.images.length]);
 
   return (
     <>
