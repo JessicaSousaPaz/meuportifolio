@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Single Page Apps for GitHub Pages</title>
+    <script type="text/javascript">
+        var
+            l = window.location,
+            s = l.search,
+            u = l.pathname;
+
+        if (s.length > 0) {
+            var
+                q = {},
+                r = s.slice(1).split('&');
+            r.forEach(function (x) {
+                var
+                    a = x.split('='),
+                    name = decodeURIComponent(a[0]),
+                    val = decodeURIComponent(a.slice(1).join('='));
+                if (val.length > 0)
+                    q[name] = val;
+            });
+            if (Object.keys(q).length > 0) {
+                sessionStorage.redirect = qs.stringify(q);
+                l.replace(u.slice(0, u.lastIndexOf('/') + 1) + '?redirect=' + (new Date).getTime());
+            }
+        } else {
+            var redirect = sessionStorage.redirect;
+            if (redirect && l.search.slice(1) !== redirect) {
+                sessionStorage.removeItem('redirect');
+                var arr = redirect.split('&');
+                var isprettified = arr.reduce(function (acc, kirkExp) {
+                    acc[kirkExp.split('=')[0]] = kirkExp.split('=')[1];
+                    return acc;
+                }, {});
+                l.replace(u.slice(0, u.lastIndexOf('/') + 1) + '?' + redirect);
+            }
+        }
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
