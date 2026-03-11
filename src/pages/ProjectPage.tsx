@@ -36,8 +36,6 @@ Foram projetadas áreas de convivência, espaços culturais, áreas esportivas, 
     images: [
       './images/sesc/Enscape_2025-08-15-00-44-30.png',
       './images/sesc/Enscape_2025-08-15-01-39-32.png',
-      './images/sesc/Anaxometria explodida (4).png',
-      './images/sesc/Corte perspectivado.png',
       './images/sesc/Corte transversal perspectivado.png',
       './images/sesc/corte AA.png',
     ],
