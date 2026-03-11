@@ -412,6 +412,14 @@ function SkillsSection() {
 function ProjectsSection() {
   const { ref, isVisible } = useIntersectionObserver();
 
+  // helper to build image URLs using Vite base (handles "/meuportifolio/" prefix)
+  const baseUrl = import.meta.env.BASE_URL;
+  const getImageUrl = (img: string) => {
+    // allow leading slash or dot
+    const clean = img.replace(/^\/?/, '');
+    return `${baseUrl}${clean}`;
+  };
+
   const projects = [
     {
       id: 'sesc-piratininga',
@@ -420,7 +428,7 @@ function ProjectsSection() {
       semester: '4º Semestre',
       description: 'Projeto arquitetônico completo para unidade SESC, explorando espaços de lazer, cultura e bem-estar com integração urbana.',
       tags: ['Arquitetura', 'Espaço Público'],
-      image: '/images/sesc/Enscape_2025-08-15-00-44-30.png',
+      image: './images/sesc/Enscape_2025-08-15-00-44-30.png',
     },
     {
       id: 'recinto',
@@ -429,7 +437,7 @@ function ProjectsSection() {
       semester: '5º Semestre',
       description: 'Estudo de intervenção arquitetônica com foco em fluxos e experiência do usuário em espaço de transição.',
       tags: ['Intervenção', 'Fluxos'],
-      image: '/images/Recinto/Recinto Prancha Final_Página_1.png',
+      image: './images/Recinto/Recinto Prancha Final_Página_1.png',
     },
     {
       id: 'favela-do-moinho',
@@ -438,7 +446,7 @@ function ProjectsSection() {
       semester: '7º Semestre',
       description: 'Projeto de requalificação urbana e transposição na Favela do Moinho, incluindo análise de insolação, fluxos e áreas verdes.',
       tags: ['Urbanismo', 'Requalificação', 'Social'],
-      image: '/images/Requalificação urbana - Favela do moinho/INTEIRA.png',
+      image: './images/Requalificação urbana - Favela do moinho/INTEIRA.png',
     },
     {
       id: 'edificio-hibrido',
@@ -447,7 +455,7 @@ function ProjectsSection() {
       semester: '8º Semestre',
       description: 'Projeto de edifício multifuncional combinando usos residenciais, comerciais e espaço cultural de midiateca.',
       tags: ['Edifício Híbrido', 'Cultura', 'Multifuncional'],
-      image: '/images/Edifício híbrido + Mídiateca/Vista 3d.png',
+      image: './images/Edifício híbrido + Mídiateca/Vista 3d.png',
     },
   ];
 
@@ -499,7 +507,7 @@ function ProjectsSection() {
               {project.image && (
                 <div className="mb-6 overflow-hidden rounded-lg">
                   <img 
-                    src={project.image} 
+                    src={getImageUrl(project.image)} 
                     alt={project.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
