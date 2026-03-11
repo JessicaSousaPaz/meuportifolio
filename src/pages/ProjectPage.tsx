@@ -63,8 +63,6 @@ O projeto considerou aspectos de acessibilidade, conforto térmico e iluminaçã
       './images/Recinto/Recinto Prancha Final_Página_2.png',
       './images/Recinto/Recinto Prancha Final_Página_3.png',
       './images/Recinto/Recinto Prancha Final_Página_4.png',
-      './images/Recinto/Recinto Prancha Final_Página_5.png',
-      './images/Recinto/Recinto Prancha Final_Página_6.png',
     ],
     details: [
       { label: 'Área', value: '450 m²' },
@@ -73,7 +71,7 @@ O projeto considerou aspectos de acessibilidade, conforto térmico e iluminaçã
   },
   'favela-do-moinho': {
     id: '03',
-    title: 'Requalificação Urbana - Favela do Moinho',
+    title: 'Transposição e Requalificação Urbana - Favela do Moinho',
     semester: '7º Semestre',
     description: 'Projeto de requalificação urbana e transposição na Favela do Moinho, incluindo análise de insolação, fluxos e áreas verdes.',
     fullDescription: `O projeto de Requalificação Urbana na Favela do Moinho abordou os desafios complexos de intervenção em áreas de ocupação informal. O estudo incluiu análise detalhada do território, mapeamento de usos existentes, estudo de insolação, fluxos de circulação e identificação de oportunidades de melhoria.
