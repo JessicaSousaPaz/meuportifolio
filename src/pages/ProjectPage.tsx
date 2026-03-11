@@ -261,13 +261,16 @@ export default function ProjectPage() {
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                         </div>
                       </DialogTrigger>
-                      <DialogContent className="fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-black border-0 rounded-none flex items-center justify-center">
+                      <DialogContent 
+                        className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !p-0 !m-0 !bg-black !border-0 !rounded-none !flex !items-center !justify-center !top-0 !left-0 !translate-x-0 !translate-y-0 !gap-0" 
+                        showCloseButton={false}
+                      >
                         <img
                           src={url}
                           alt={`${project.title} - Imagem ${index + 1}`}
-                          className="w-full h-full object-contain"
+                          className="max-h-screen max-w-screen w-auto h-auto object-contain"
                         />
-                    </DialogContent>
+                      </DialogContent>
                   </Dialog>
                   );
                 })}
