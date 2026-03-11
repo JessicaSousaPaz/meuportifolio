@@ -252,14 +252,12 @@ export default function ProjectPage() {
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="max-w-[100vw] max-h-[100vh] w-full h-full p-0 bg-black/95 border-0">
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <img
-                          src={image}
-                          alt={`${project.title} - Imagem ${index + 1}`}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
+                    <DialogContent className="fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-black border-0 rounded-none flex items-center justify-center">
+                      <img
+                        src={image}
+                        alt={`${project.title} - Imagem ${index + 1}`}
+                        className="w-full h-full object-contain"
+                      />
                     </DialogContent>
                   </Dialog>
                 ))}
