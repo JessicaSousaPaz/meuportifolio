@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Tag, MapPin } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, MapPin, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface ProjectData {
   id: string;
@@ -141,6 +140,123 @@ O projeto incluiu estudos estruturais, sistemas de circulação vertical, análi
   },
 };
 
+// Gallery Component with navigation
+function GallerySection({ 
+  project, 
+  getImageUrl 
+}: { 
+  project: ProjectData; 
+  getImageUrl: (img: string) => string;
+}) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handlePrevious = () => {
+    if (selectedIndex !== null) {
+      setSelectedIndex((selectedIndex - 1 + project.images.length) % project.images.length);
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedIndex !== null) {
+      setSelectedIndex((selectedIndex + 1) % project.images.length);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isOpen) return;
+    if (e.key === 'ArrowLeft') handlePrevious();
+    if (e.key === 'ArrowRight') handleNext();
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      setSelectedIndex(null);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, selectedIndex]);
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4">
+        {project.images.map((image, index) => {
+          const url = getImageUrl(image);
+          return (
+            <div
+              key={index}
+              onClick={() => {
+                setSelectedIndex(index);
+                setIsOpen(true);
+              }}
+              className={`relative overflow-hidden rounded-lg group cursor-pointer ${
+                index === 0 ? 'col-span-2 aspect-[21/9]' : 'aspect-[4/3]'
+              }`}
+            >
+              <img
+                src={url}
+                alt={`${project.title} - Imagem ${index + 1}`}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Fullscreen Image Viewer */}
+      {isOpen && selectedIndex !== null && (
+        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              setSelectedIndex(null);
+            }}
+            className="absolute top-6 right-6 z-20 text-white hover:text-gray-300 transition-colors p-2"
+            aria-label="Fechar"
+          >
+            <X size={32} strokeWidth={1.5} />
+          </button>
+
+          {/* Image */}
+          <img
+            src={getImageUrl(project.images[selectedIndex])}
+            alt={`${project.title} - Imagem ${selectedIndex + 1}`}
+            className="max-h-screen max-w-screen w-auto h-auto object-contain"
+          />
+
+          {/* Previous Button */}
+          <button
+            onClick={handlePrevious}
+            className="absolute left-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2 disabled:opacity-50"
+            aria-label="Imagem anterior"
+          >
+            <ChevronLeft size={40} strokeWidth={1.5} />
+          </button>
+
+          {/* Next Button */}
+          <button
+            onClick={handleNext}
+            className="absolute right-6 top-1/2 -translate-y-1/2 z-20 text-white hover:text-gray-300 transition-colors p-2 disabled:opacity-50"
+            aria-label="Próxima imagem"
+          >
+            <ChevronRight size={40} strokeWidth={1.5} />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 text-white text-sm font-light tracking-wide">
+            {selectedIndex + 1} / {project.images.length}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const project = projectId ? projectsData[projectId] : null;
@@ -242,39 +358,7 @@ export default function ProjectPage() {
             {/* Gallery */}
             <div className="mt-16">
               <h2 className="text-xl font-medium mb-8">Galeria do Projeto</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {project.images.map((image, index) => {
-                  const url = getImageUrl(image);
-                  return (
-                    <Dialog key={index}>
-                      <DialogTrigger asChild>
-                        <div 
-                          className={`relative overflow-hidden rounded-lg group cursor-pointer ${
-                            index === 0 ? 'col-span-2 aspect-[21/9]' : 'aspect-[4/3]'
-                          }`}
-                        >
-                          <img
-                            src={url}
-                            alt={`${project.title} - Imagem ${index + 1}`}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent 
-                        className="!fixed !inset-0 !w-screen !h-screen !max-w-none !max-h-none !p-0 !m-0 !bg-black !border-0 !rounded-none !flex !items-center !justify-center !top-0 !left-0 !translate-x-0 !translate-y-0 !gap-0" 
-                        showCloseButton={false}
-                      >
-                        <img
-                          src={url}
-                          alt={`${project.title} - Imagem ${index + 1}`}
-                          className="max-h-screen max-w-screen w-auto h-auto object-contain"
-                        />
-                      </DialogContent>
-                  </Dialog>
-                  );
-                })}
-              </div>
+              <GallerySection project={project} getImageUrl={getImageUrl} />
             </div>
           </div>
 
