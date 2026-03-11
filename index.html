@@ -7,6 +7,26 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module">
+      const isGithubPages = window.location.hostname.endsWith('github.io');
+      const assetBase = isGithubPages ? '/meuportifolio/assets/' : '/src/';
+
+      if (isGithubPages) {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = `${assetBase}index-C43X-UWq.css`;
+        document.head.appendChild(css);
+
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = `${assetBase}index-Cd98QxIP.js`;
+        document.body.appendChild(script);
+      } else {
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/src/main.tsx';
+        document.body.appendChild(script);
+      }
+    </script>
   </body>
 </html>
