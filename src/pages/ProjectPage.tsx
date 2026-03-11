@@ -92,7 +92,6 @@ Foram desenvolvidos estudos de viabilidade, análise de custos e propostas de im
       './images/Requalificação urbana - Favela do moinho/PONTE TREM.png',
       './images/Requalificação urbana - Favela do moinho/QUADRA.png',
       './images/Requalificação urbana - Favela do moinho/SALA DE ESTUDOS.png',
-      './images/Requalificação urbana - Favela do moinho/Enscape_2025-05-29-00-03-38.png',
       './images/Requalificação urbana - Favela do moinho/Enscape_2025-06-02-01-14-13.png',
     ],
     details: [
