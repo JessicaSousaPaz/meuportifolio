@@ -145,6 +145,13 @@ export default function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const project = projectId ? projectsData[projectId] : null;
 
+  // base URL from Vite configuration (includes "/meuportifolio/" when deployed)
+  const baseUrl = import.meta.env.BASE_URL;
+  const getImageUrl = (img: string) => {
+    const clean = img.replace(/^\.\//, '');
+    return `${baseUrl}${clean}`;
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -181,7 +188,7 @@ export default function ProjectPage() {
       <div className="pt-16">
         <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
           <img
-            src={project.images[0]}
+            src={getImageUrl(project.images[0])}
             alt={project.title}
             className="w-full h-full object-cover"
           />
@@ -236,31 +243,34 @@ export default function ProjectPage() {
             <div className="mt-16">
               <h2 className="text-xl font-medium mb-8">Galeria do Projeto</h2>
               <div className="grid grid-cols-2 gap-4">
-                {project.images.map((image, index) => (
-                  <Dialog key={index}>
-                    <DialogTrigger asChild>
-                      <div 
-                        className={`relative overflow-hidden rounded-lg group cursor-pointer ${
-                          index === 0 ? 'col-span-2 aspect-[21/9]' : 'aspect-[4/3]'
-                        }`}
-                      >
+                {project.images.map((image, index) => {
+                  const url = getImageUrl(image);
+                  return (
+                    <Dialog key={index}>
+                      <DialogTrigger asChild>
+                        <div 
+                          className={`relative overflow-hidden rounded-lg group cursor-pointer ${
+                            index === 0 ? 'col-span-2 aspect-[21/9]' : 'aspect-[4/3]'
+                          }`}
+                        >
+                          <img
+                            src={url}
+                            alt={`${project.title} - Imagem ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-black border-0 rounded-none flex items-center justify-center">
                         <img
-                          src={image}
+                          src={url}
                           alt={`${project.title} - Imagem ${index + 1}`}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-contain"
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                      </div>
-                    </DialogTrigger>
-                    <DialogContent className="fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-black border-0 rounded-none flex items-center justify-center">
-                      <img
-                        src={image}
-                        alt={`${project.title} - Imagem ${index + 1}`}
-                        className="w-full h-full object-contain"
-                      />
                     </DialogContent>
                   </Dialog>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

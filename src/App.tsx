@@ -197,7 +197,7 @@ function SobreMimSection() {
             <div className="flex justify-center md:justify-start">
               <div className="relative w-64 h-64 md:w-72 md:h-72">
                 <img 
-                  src="./images/minha foto.jpeg" 
+                  src={`${import.meta.env.BASE_URL}images/minha foto.jpeg`} 
                   alt="Jéssica de Sousa Paz"
                   className="w-full h-full rounded-full object-cover object-top shadow-lg"
                 />
